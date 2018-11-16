@@ -1,0 +1,103 @@
+metadata:
+  title: Australian Income Tax Calculation
+  short title: DDGTaxCalc
+---
+modules:
+ - docassemble.base.util
+--- 
+imports:
+ - numpy as np
+---
+mandatory: True
+
+question: |
+  The results of your tax calculation are shown below:
+subquestion: |
+  Your gross (before tax) income is ${ currency(gross_income,0) }  
+  Your taxable income is ${ currency(taxable_income,0) }  
+  Your tax payable is ${ currency(tax_payable,0) }  
+  Your medicare levy payable is ${ currency(medicare_levy,0) }  
+  Your tax offsets are ${ currency(lito+lmito,0) }  
+  Your total tax payable is ${ currency(tax_payable + medicare_levy - lito -lmito,0)}  
+    
+  Your Division 293 Tax payable is ${ currency(div_293_tax) }
+
+buttons:
+  - Exit: exit
+  - Restart: restart
+
+---
+question: |
+  Please input your loan details.
+subquestion: |
+  We require the principal and term at the start of your loan to determine your minimum payment.
+fields:
+  - 'Employment Income': employment_income
+    datatype: currency
+  - 'Net Business/Self Employment Income': self_employment_income
+    datatype: currency
+  - 'Investment Income': investment_income
+    datatype: currency
+  - 'Salary Sacrifice to Super': super_salary_sacrifice
+    datatype: currency
+  - 'Other Tax Deductions': other_tax_deductions
+    datatype: currency
+  - 'FBT Amounts (used to estimate Division 293 Tax if payable)': FBT_amount
+    datatype: currency
+---
+code: |
+  gross_income = employment_income + self_employment_income + investment_income
+  taxable_income = employment_income + self_employment_income + investment_income - super_salary_sacrifice - other_tax_deductions
+---
+code: |
+  if taxable_income <=18200:
+    tax_payable = 0
+  elif taxable_income <=37000:
+    tax_payable = (taxable_income -18200)*0.19
+  elif taxable_income <=90000:
+    tax_payable = 3572 + ((taxable_income-37000)*0.325)
+  elif taxable_income<=180000:
+    tax_payable = 20797 + ((taxable_income-90000)*0.37)
+  elif taxable_income>180000:
+    tax_payable = 54097 + ((taxable_income-180000)*0.45)
+---
+code: |
+  if taxable_income <=21980:
+    medicare_levy = 0
+  elif 21980 < taxable_income <=27475:
+    medicare_levy = (taxable_income - 21980) * 0.1
+  elif taxable_income >27475:
+    medicare_levy = 0.02*taxable_income
+---
+code: |
+  if taxable_income <=37000:
+    lito = 445
+  elif 37000 < taxable_income <= 66667:
+    lito = 445 - ((66667-37000)*0.015)
+  else:
+   lito = 0
+---
+code: |
+  if 370000 <= taxable_income:
+    lmito = 200
+  elif 37000 > taxable_income >= 48000:
+    lmito = 200 + (0.03*(taxable_income-37000))
+  elif 48000 < taxable_income <= 90000:
+    lmito = 530
+  elif 90000 < taxable_income <= 125333:
+    lmito = 530 - (0.015* (taxable_income-90000))
+  else:
+    lmito = 0
+---
+code: |
+  sg_contributions = employment_income*0.095
+  div_293_income = taxable_income + FBT_amount + sg_contributions
+  
+  if div_293_income > 250000:
+    if (sg_contributions + super_salary_sacrifice) < (div_293_income-250000):
+      div_293_tax = currency((sg_contributions + super_salary_sacrifice)*0.15)
+    elif (sg_contributions + super_salary_sacrifice) > (div_293_income-250000):
+      div_293_tax = (div_293_income-250000)*0.15
+  else:
+    div_293_tax = 0
+    
