@@ -47,7 +47,7 @@ def find_package_data(where='.', package='', exclude=standard_exclude, exclude_d
 setup(name='docassemble.Woztax',
       version='0.0.1',
       description=('A docassemble extension for collecting income and expense information and estimating Australian income tax.'),
-      long_description=u'# docassemble.Woztax\n\nA docassemble extension for collecting income and expense information and estimating Australian income tax.\n\n## Author\n\nBlake Tooth, blake.tooth@gmail.com\n\n',
+      long_description='# docassemble.Woztax\r\n\r\nA docassemble extension for collecting income and expense information and estimating Australian income tax.\r\n\r\n## Author\r\n\r\nBlake Tooth, blake.tooth@gmail.com\r\n\r\n',
       long_description_content_type='text/markdown',
       author='Blake Tooth',
       author_email='blake.tooth@gmail.com',

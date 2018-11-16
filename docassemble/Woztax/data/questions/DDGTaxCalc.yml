@@ -20,7 +20,7 @@ subquestion: |
   Your tax offsets are ${ currency(lito+lmito,0) }  
   Your total tax payable is ${ currency(tax_payable + medicare_levy - lito -lmito,0)}  
     
-  Your Division 293 Tax payable is ${ currency(div_293_tax) }
+  Your Division 293 Tax payable is ${ currency(div_293_tax,0) }
 
 buttons:
   - Exit: exit
@@ -28,7 +28,7 @@ buttons:
 
 ---
 question: |
-  Please input your loan details.
+  Please input your income and tax details in the fields below:
 subquestion: |
   We require the principal and term at the start of your loan to determine your minimum payment.
 fields:
@@ -91,7 +91,7 @@ code: |
 ---
 code: |
   sg_contributions = employment_income*0.095
-  div_293_income = taxable_income + FBT_amount + sg_contributions
+  div_293_income = taxable_income + FBT_amount + sg_contributions + super_salary_sacrifice
   
   if div_293_income > 250000:
     if (sg_contributions + super_salary_sacrifice) < (div_293_income-250000):
